@@ -1,6 +1,6 @@
-import "../css/ChatBot.css"
-import React, { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
+import "../css/ChatBot.css";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
     FiFile,
     FiSend,
@@ -14,99 +14,116 @@ import {
     FiFlag,
     FiRefreshCw,
     FiDownload
-} from "react-icons/fi"
-import { FaFileAlt, FaHamburger, FaRegCopy } from "react-icons/fa"
-import { AiOutlineLike, AiOutlineDislike } from "react-icons/ai"
-import { BsThreeDotsVertical } from "react-icons/bs"
-import { RiFileCopyLine } from "react-icons/ri"
-import { MdImage } from "react-icons/md"
-import { FaBars } from "react-icons/fa"
+} from "react-icons/fi";
+import { FaFileAlt, FaRegCopy } from "react-icons/fa";
+import { AiOutlineLike, AiOutlineDislike } from "react-icons/ai";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { RiFileCopyLine } from "react-icons/ri";
+import { MdImage } from "react-icons/md";
+import { FaBars } from "react-icons/fa";
 
 export default function Chatbot() {
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
     return (
         <div className="chatbot">
-            <NavBar />
-            <SideBar />
+            <NavBar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+            <SideBar
+                isOpen={sidebarOpen}
+                closeSidebar={() => setSidebarOpen(false)}
+            />
             <Bot />
         </div>
-    )
+    );
 }
 
-function NavBar() {
-    const [width, setWidth] = useState(window.innerWidth)
+function NavBar({ toggleSidebar }) {
+    const [width, setWidth] = useState(window.innerWidth);
+
     useEffect(() => {
         function handleResize() {
-            setWidth(window.innerWidth)
+            setWidth(window.innerWidth);
         }
-        window.addEventListener("resize", handleResize)
-    }, [])
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     return (
         <div className="botnavbar">
             {width < 600 && (
-                <i>
+                <i onClick={toggleSidebar}>
                     <FaBars />
                 </i>
             )}
             <span>
-                Ultra<span class="colored">AI</span>
+                Ultra<span className="colored">AI</span>
             </span>
             <i>
                 <FiPlus />
             </i>
         </div>
-    )
+    );
 }
 
-function SideBar() {
-    const [width, setWidth] = useState(window.innerWidth)
+function SideBar({ isOpen, closeSidebar }) {
+    const [width, setWidth] = useState(window.innerWidth);
 
     useEffect(() => {
         function handleResize() {
-            setWidth(window.innerWidth)
+            setWidth(window.innerWidth);
         }
-        window.addEventListener("resize", handleResize)
-    }, [])
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    // Close sidebar when clicking outside on mobile
+    useEffect(() => {
+        if (width < 600 && isOpen) {
+            const handleClickOutside = e => {
+                if (!e.target.closest(".sidebar")) {
+                    closeSidebar();
+                }
+            };
+            document.addEventListener("mousedown", handleClickOutside);
+            return () =>
+                document.removeEventListener("mousedown", handleClickOutside);
+        }
+    }, [isOpen, width, closeSidebar]);
+
     return (
-        <>
-            <div
-                className="sidebar"
-                className={`sidebar ${
-                    width > 600 ? "transformback" : "transformit"
-                }`}
-            >
-                <center class="brand">
-                    <img src="/img/favicon.png" alt="logo" />
-                    <Link to="/ImgGen">
-                        <h3>
-                            <MdImage size={30}/> <span>AI Image Generator</span>
-                        </h3>
-                    </Link>
-                    <hr style={{ border: "1px dashed var(--primary)" }} />
-                </center>
-                <div class="history"></div>
-            </div>
-        </>
-    )
+        <div className={`sidebar ${width > 600 || isOpen ? "open" : ""}`}>
+            <center className="brand">
+                <img src="/img/favicon.png" alt="logo" />
+                <Link to="/ImgGen">
+                    <h3>
+                        <MdImage size={30} /> <b>AI Image Generator</b>
+                    </h3>
+                </Link>
+                <hr style={{ border: "1px dashed var(--primary)" }} />
+            </center>
+            <div className="history"></div>
+        </div>
+    );
 }
 
 function Bot() {
     return (
         <div className="bot">
-            <div class="result">
-                <div class="bot-msg">
-                    <div class="msg">
+            <div className="result">
+                <div className="bot-msg">
+                    <div className="msg">
                         Ai is a a technology based program intelligent computer.
                     </div>
-                    <div class="bot-tool">
+                    <div className="bot-tool">
                         <FaRegCopy />
                         <FiFlag />
                         <AiOutlineLike />
                         <AiOutlineDislike />
                     </div>
                 </div>
-                <div class="user-msg">
-                    <div class="msg">What is AI?</div>
-                    <div class="user-tool">
+                <div className="user-msg">
+                    <div className="msg">What is AI?</div>
+                    <div className="user-tool">
                         <span></span>
                         <span></span>
                         <FaRegCopy />
@@ -116,9 +133,9 @@ function Bot() {
             </div>
             <form>
                 <textarea placeholder="Ask me any thing..."></textarea>
-                <div class="chat-btns">
+                <div className="chat-btns">
                     <button type="button">
-                        <label for="file-input">
+                        <label htmlFor="file-input">
                             <FiFile />
                         </label>
                         <input type="file" id="file-input" />
@@ -129,5 +146,5 @@ function Bot() {
                 </div>
             </form>
         </div>
-    )
+    );
 }
